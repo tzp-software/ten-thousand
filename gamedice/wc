@@ -1,0 +1,434 @@
+'''
+    gamedice.choose_dice.py
+'''
+from scores import get_counts
+
+def get_choice(roll):
+    rtn = []
+    diceLeft = len(roll)
+    if len(roll) == 6:
+        # check 6 of a kind, strait or doubles
+        # this is doubles
+        if get_counts(roll).values().count(2) == 3:
+            # just return the roll
+            rtn.append(tuple(roll))
+            # and kill the count
+            diceLeft -= 6
+        # this is s a strait
+        if get_counts(roll).values().count(1) == 6:
+            # just return the roll
+            rtn.append(tuple(roll))
+            # and kill the count
+            diceLeft -= 6
+        # this is six of a kind
+        if get_counts(roll).values().count(6) == 1: 
+            # just return the roll
+            rtn.append(tuple(roll))
+            # and kill the count
+            diceLeft -= 6
+    
+    if len(roll) >= 5:
+        if get_counts(roll).values().count(5) == 1: # 5 of a kind
+            tmp = []
+            if diceLeft >= 5:
+                for d in range(len(roll)):
+                    if diceLeft > 0:
+                        if roll.count(roll[d]) == 5:
+                            tmp.append(roll[d])
+                            diceLeft -= 1
+            if len(tmp) >=1:
+                rtn.append(tuple(tmp))
+            tmp = []
+
+    if len(roll) >= 4:
+        if get_counts(roll).values().count(4) == 1: # 4 of a kind
+            tmp = []
+            if diceLeft >= 4:
+                for d in range(len(roll)):
+                    if diceLeft > 0:
+                        if roll.count(roll[d]) == 4:
+                            tmp.append(roll[d])
+                            diceLeft -= 1
+            if len(tmp) >= 1:
+                rtn.append(tuple(tmp))
+            tmp = []
+
+    if len(roll) >= 3:
+        if 2 >= get_counts(roll).values().count(3) >= 1: # one or two 3 of a kind
+            tmp = []
+            if diceLeft >= 3:
+                for d in range(len(roll)):
+                    if diceLeft > 0:
+                        if roll.count(roll[d]) == 3:
+                            tmp.append(roll[d])
+                            diceLeft -= 1
+            if len(tmp) >= 1:
+                if len(tmp) == 6:
+                    tmp.sort()
+                    tmp = (tuple(tmp[:3]),tuple(tmp[3:]))
+                rtn.append(tmp)
+            tmp = []
+    if diceLeft > 0:
+        if 1 in roll:
+            if get_counts(roll)['1'] <= 2:
+                tmp = []
+                for d in roll:
+                    if d == 1:
+                        tmp.append(d)
+                if len(tmp) >=1:
+                    rtn.append(tuple(tmp))
+                tmp = []
+        if 5 in roll:
+            if get_counts(roll)['5'] <= 2:
+                tmp = []
+                for d in roll:
+                    if d == 5:
+                        tmp.append(d)
+                if len(tmp) >= 1:
+                    rtn.append(tuple(tmp))
+    return rtn
+
+
+def main():
+    from dice import Roll
+    roll = Roll()
+    d = roll.get_new_roll()
+    print 'Rolled:\n{}'.format(d)
+    print 'Held:\n{}'.format(get_choice(d))
+
+if __name__ == "__main__":
+    main()
+    
+# dice.py
+import random
+from die_utils import split_nums, get_tuple_from_count_dict
+from scores import get_score
+from choose_dice import get_choice
+
+
+class DieCountError(Exception):
+    pass
+
+class Roll(object):
+    _defaultDieNum = 6
+    def __init__(self, dieNum=None):
+        if dieNum is None:
+            self.dieNum = Roll._defaultDieNum
+        else:
+            self.dieNum = dieNum
+        self.currentCount = self.dieNum
+        self.currentRoll = [][:]
+        self.heldDice = [][:]
+
+    def __str__(self):
+        return ' '.join(map(str,self.currentRoll))
+
+    def __repr__(self):
+        return str(self.currentRoll)
+
+    def __len__(self):
+        return self.currentCount
+
+    def get_new_roll(self):
+        if self.currentCount == 0:
+            self.currentCount = self.dieNum
+        self.currentRoll = [random.randrange(1,7) for die in range(self.currentCount)]
+        return self.currentRoll[:]
+
+    def hold_dice(self,dice):
+        if len(dice) > self.currentCount:
+            raise DieCountError
+        self.currentCount -= len(dice)
+        self.heldDice.append(dice)
+
+    def view_holds(self):
+        return ' '.join(map(str,self.heldDice))
+
+    def get_holds(self):
+        rtn = self.heldDice[:]
+        self.heldDice = [][:]
+        self.currentCount = self.dieNum
+        return rtn
+
+    def get_held_score(self):
+        rtn = 0
+        for itm in self.heldDice:
+            nums = list(split_nums(itm))
+            nums[2] = get_tuple_from_count_dict(nums[2])
+            print nums[0]
+            print nums[1]
+            print nums[2]
+            for itm in nums:
+                if len(itm) >= 1:
+                    print get_score(itm)
+            #rtn += get_score(nums)
+        return rtn
+
+
+#r = Roll()
+#d = r.get_new_roll()
+#r.hold_dice(get_choice(d))
+#d = r.get_new_roll()
+#r.hold_dice(get_choice(d))
+#d = r.get_new_roll()
+#r.hold_dice(get_choice(d))
+#r.get_held_score()
+# coding: utf-8
+def split_nums(nums):
+    ones = []
+    fives = []
+    others = {}
+    for n in nums:
+        if str(n) == '1':
+            ones.append(n)
+        elif str(n) == '5':
+            fives.append(n)
+        else:
+            if others.get(str(n)):
+                others[str(n)] += 1
+            else:
+                others[str(n)] = 1
+    return (tuple(ones),tuple(fives),others)
+
+def get_tuple_from_count_dict(d):
+    rtn = []
+    for itm in d:
+        rtn.append(tuple(((itm+' ')*int(d[itm])).split()))
+    return tuple(rtn)
+
+def main():
+    n = [1,5,1,6,6,5,6]
+    print split_nums(n)[:-1] + get_t_from_d(split_nums(n)[2])
+
+if __name__ == "__main__":
+    main()
+
+''' 
+    dice.player.py
+'''
+from die_utils import split_nums, get_tuple_from_count_dict
+from scores import get_score, score_dice
+from choose_dice import get_choice
+from dice import Roll
+
+class Player(object):
+    _count = 0
+    def __init__(self, name=None):
+        Player._count += 1
+        self._count = Player._count
+        if name is None:
+            self._name = 'Player#{}'.format(self._count)
+            self._isHuman = False
+        else:
+            self._name = name
+            self._isHuman = True
+        self._score = 0 
+        self._wins = 0
+
+    def __str__(self):
+        return self._name
+
+    def __repr__(self):
+        return str(self)
+
+    def update_score(self,score):
+        if score <= 0:
+            raise ValueError
+        self._score += score
+
+    def ask_to_hold(self, dice):
+        if self._isHuman:
+            choice = raw_input(HOLD_SCREEN.format(dice))
+        else:
+            tmp = str(get_choice(dice))
+            choice = ' '
+            for i in tmp:
+                try:
+                    int(i)
+                    choice += str(i) + ' '
+                except:
+                    pass
+        return tuple(map(int,choice.split()))
+
+HOLD_SCREEN = '''
+Please choose which dice from your roll to hold.
+To choose, type each die to keep and a space,
+when your finished press return.
+
+Roll --> | {} |
+
+>> '''
+
+STAY_SCREEN = '''
+
+Would you like to stay with
+held  --->    {}
+or take your chances and keep rolling?
+(Yes stay / No keep rolling) 
+(y or n) >> '''
+
+
+def test():
+    WON = False
+    p = Player()
+    roll = Roll()
+    import time
+    tmp = None
+    held = [][:]
+    holdCount = 0
+    while True:
+        r = roll.get_new_roll()
+        print 'Computer rolled\n{}'.format(r)
+        time.sleep(1.5)
+        tmp = p.ask_to_hold(r)
+        if tmp:
+            xtra = []
+            ones, fives, others = split_nums(tmp)
+            others = get_tuple_from_count_dict(others)
+            for x in [ones,fives,others]:
+                if len(x) >= 1 and bool(x[0]) == True:
+                    xtra.append(x)
+            print 'He held\n{}'.format(tmp)
+            time.sleep(1.5)
+            roll.hold_dice(tmp)
+            holdCount += len(tmp)
+            if holdCount > 15:
+                print 'computer stayed'
+                time.sleep(1.5)
+                #if raw_input(STAY_SCREEN.format(roll.view_holds())).lower().startswith('y'):
+                WON = True
+                break
+        else:
+            if len(r) == 2:
+                if r[0] == r[1]:
+                    continue
+            break
+    if WON: 
+        holds = []
+        for itm in roll.get_holds():
+            if len(itm) == 6:
+                holds.append(itm)
+                continue
+            o,f,t = split_nums(itm)
+            if len(t.values()) >= 1:
+                t = get_tuple_from_count_dict(t)
+            for x in [o,f,t]:
+                if len(x) >= 1 and bool(x[0]) == True:
+                    if len(x) == 1 and type(x[0]) != type(1):
+                        x = x[0]
+                    holds.append(x)
+                    score = score_dice(holds)
+        print 'He held:\n{}\nWorth {} points'.format(' '.join(map(str,holds)),score)
+
+    else:
+        holds = []
+        for itm in roll.get_holds():
+            if len(itm) == 6:
+                holds.append(itm)
+                continue
+            o,f,t = split_nums(itm)
+            if len(t.values()) >= 1:
+                t = get_tuple_from_count_dict(t)
+            for x in [o,f,t]:
+                #print x
+                if len(x) >= 1 and bool(x[0]) == True:
+                    #print x
+                    if len(x) == 1 and type(x[0]) != type(1):
+                        x = x[0]
+                    holds.append(x)
+        score = 0
+        #print get_score(itm)
+        score = score_dice(holds)
+        print 'He lost:\n{}\nWorth {} points'.format(' '.join(map(str,holds)),score)
+
+    time.sleep(1.5)
+
+if __name__ == "__main__":
+    test()
+
+from scores import get_counts, score_dice, get_score
+from die_utils import split_nums, get_tuple_from_count_dict
+
+
+class Scorer(object):
+    def process_score(self,heldDice):
+
+'''
+    gamedice.scores.py
+'''
+
+COUNT_MAP = {
+    '1':0,'2':0,
+    '3':0,'4':0,
+    '5':0,'6':0
+            }
+
+def get_counts(roll):
+    rtn = COUNT_MAP.copy()
+    for d in roll:
+        rtn[str(d)] += 1
+    return rtn
+
+def score_dice(heldRolls):
+    total = 0
+    subTotal = 0
+    for roll in heldRolls:
+        subTotal = get_score(roll)
+        total += subTotal
+    return total
+
+def get_score(roll):
+    '''
+        this function can only take dice already 
+        seperated by number ie: (1,1,1) or (5,5) not (1,1,5) 
+        thats what die_utils:split_nums(nums) is for
+    '''
+    if roll[0] != 1:
+        base = 100
+    else:
+        base = 1000
+    if len(roll) == 6:
+        # could be strait, doubles or 6 of a kind
+        if roll.count(roll[0]) == 6:
+            # six of a kind
+            return (((int(roll[0])*base)*2)*2)*2
+        else: # its either doubles or a strait
+            # 1000 points
+            return 1000
+    elif len(roll) == 5:
+        # five of a kind
+        return ((int(roll[0])*base)*2)*2
+    elif len(roll) == 4:
+        # four of a kind
+        return (int(roll[0])*base)*2
+    elif len(roll) == 3:
+        # three of a kind
+        try:
+            return int(roll[0])*base
+        except:
+            return int(roll[0][0])*base
+    else:
+        # 1 or 5
+        if roll[0] == 1:
+            return len(roll)*100
+        else:
+            # fives
+            return len(roll)*50
+
+
+#def test():
+#    roll = Roll()
+#    d = roll.get_new_roll()
+#    print 'The Roll:\n{}'.format(d)
+#    print 'The counts:\n{}'.format(get_counts(d))
+
+
+def main():
+    held = ((1,),(3,3,3),(1,2,3,4,5,6),(5,),(1,1))
+    print score_dice(held)
+    held = ((5,5,5),(4,4,4,4),(1,),(5,),(1,1,1))
+    print score_dice(held)
+    
+if __name__ == "__main__":
+    test()
+    main()
