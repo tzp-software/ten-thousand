@@ -41,11 +41,11 @@ def start_roll():
         print 'press enter to go again, or q to quit',
         quit = raw_input()
         if quit == 'q':
-            break
-        else:
             current.change_state()
             tmpScore = 0
             clear()
+            break
+        else:
             continue
         #current.score +=  tmpScore
         

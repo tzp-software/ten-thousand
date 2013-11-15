@@ -1,0 +1,25 @@
+Metadata-Version: 1.0
+Name: ten-thousand
+Version: 0.0.2
+Summary: a dice game
+Home-page: git://github.com/tzp-software/ten-thousand.git
+Author: Kyle Roux
+Author-email: jstacoder@gmail.com
+License: UNKNOWN
+Description: ten thousand (a dice game)
+        
+        roll 6 dice 
+        pick up to score 
+        if you can you lose your turn
+        
+        stop to keep your score but only if you didnt pick up all
+        the dice rolled last
+        
+        also you cant stop till you reach 1000 points
+        
+        
+        once a player reaches 10000 other players have a chance to 
+        come back with one final roll
+        
+        
+Platform: UNKNOWN

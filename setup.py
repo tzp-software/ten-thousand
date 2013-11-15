@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-# -*- coding: utf-8 -*-
-"""
-    __name__ =
-    __author__ = kyle roux
-    __author_email__ = jstacoder@gmail.com
-"""
-
-def main():
-    pass
-
-if __name__ == "__main__":
-    main()
-=======
 try:
     from setuptools import setup
 except ImportError:
@@ -30,4 +16,3 @@ config = {
 setup(**config)
 
 
->>>>>>> 88ea5dfefca588f65705fdfd85765474587d8475

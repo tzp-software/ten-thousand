@@ -1,0 +1,6 @@
+README
+setup.py
+ten_thousand.egg-info/PKG-INFO
+ten_thousand.egg-info/SOURCES.txt
+ten_thousand.egg-info/dependency_links.txt
+ten_thousand.egg-info/top_level.txt

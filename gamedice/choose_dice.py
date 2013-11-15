@@ -66,7 +66,7 @@ def get_choice(roll):
                 if len(tmp) == 6:
                     tmp.sort()
                     tmp = (tuple(tmp[:3]),tuple(tmp[3:]))
-                rtn.append(tmp)
+                rtn.append(tuple(tmp))
             tmp = []
     if diceLeft > 0:
         if 1 in roll:
