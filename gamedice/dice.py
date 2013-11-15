@@ -8,6 +8,17 @@ from choose_dice import get_choice
 class DieCountError(Exception):
     pass
 
+
+def get_nums_from_strs(strs):
+    rtn = [][:]
+    for c in strs:
+        try:
+            rtn.append(int(c))
+        except:
+            pass
+    return rtn
+
+
 class Roll(object):
     _defaultDieNum = 6
     def __init__(self, dieNum=None):
@@ -35,9 +46,13 @@ class Roll(object):
         return self.currentRoll[:]
 
     def hold_dice(self,dice):
+        d = str(dice)
+        dice = get_nums_from_strs(d)
         if len(dice) > self.currentCount:
             raise DieCountError
-        self.currentCount -= len(dice)
+        for x in dice:
+            self.currentCount -= 1
+        #self.currentCount -= len(dice)
         self.heldDice.append(dice)
 
     def view_holds(self):
@@ -62,6 +77,7 @@ class Roll(object):
                     print get_score(itm)
             #rtn += get_score(nums)
         return rtn
+
 
 
 #r = Roll()
