@@ -15,12 +15,12 @@ class State(object):
         State._stateCount += 1
         self.stateNum = State._stateCount
         self.stateName = 'State{}'.format(self.stateNum)
-        self.id = stateInfo
+        self.parent = stateInfo
         self.score = 0
         State._stateList.append(self)
         if State._currentState is None:
             State.set_current(self)
-        self.id = stateInfo
+        
         
     
     def __str__(self):
@@ -35,7 +35,7 @@ class State(object):
         
     @staticmethod
     def get_current():
-        return State._currentState
+        return State._currentState.parent
 
     @staticmethod
     def set_current(state):

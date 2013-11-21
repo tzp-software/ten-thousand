@@ -1,0 +1,28 @@
+#!/bin/sh
+#
+# $Id: copy_or_link.sh,v 1.2 2010-02-09 11:57:14 sand Exp $
+#
+# Copyright (C) 2003-2009 FAUmachine Team <info@faumachine.org>.
+# This program is free software. You can redistribute it and/or modify it
+# under the terms of the GNU General Public License, either version 2 of
+# the License, or (at your option) any later version. See COPYING.
+
+
+if [ -z $FAUM_ISO_BASEPATH ] ; then
+	FAUM_ISO_BASEPATH='/src/FAUmachine.Distributions'
+fi
+
+if [ -f $FAUM_ISO_BASEPATH/${1} ] ; then
+	ln -sf $FAUM_ISO_BASEPATH/${1} ${2}
+else
+	echo "For the experiments you must copy or link" 1>&2
+	echo "${1} to `pwd`" 1>&2
+	echo "For example: insert your ${1}-CD into" 1>&2
+	echo "your CDROM drive and type" 1>&2
+	echo "" 1>&2
+	echo "cd `pwd`" 1>&2
+	echo "cp /dev/cdrom ${2}" 1>&2
+	echo "copy_or_link now supports env. var FAUM_ISO_BASEPATH as path to your ISO repository" 1>&2
+	echo "actual using FAUM_ISO_BASEPATH=$FAUM_ISO_BASEPATH"
+	exit 1
+fi

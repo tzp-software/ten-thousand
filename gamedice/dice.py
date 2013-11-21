@@ -46,14 +46,30 @@ class Roll(object):
         return self.currentRoll[:]
 
     def hold_dice(self,dice):
-        d = str(dice)
-        dice = get_nums_from_strs(d)
-        if len(dice) > self.currentCount:
-            raise DieCountError
-        for x in dice:
-            self.currentCount -= 1
-        #self.currentCount -= len(dice)
-        self.heldDice.append(dice)
+        d = []
+        for itm in dice:
+            print repr(itm)
+            if not itm == ' ':
+                d.append(itm)
+        print d
+        #dice = get_nums_from_strs(d)
+        if len(d) > self.currentCount:
+            raise DieCountError, d
+        for x in d:
+            if len(x) == 1:
+                self.currentCount -= 1
+            elif len(x) > 1:
+                for i in x:
+                    try:
+                        int(i)
+                        if int(i) >= 1:
+                            self.currentCount -= 1
+                    except:
+                        pass
+            else:
+                pass
+            if not x == ' ':
+                self.heldDice.append(x)
 
     def view_holds(self):
         return ' '.join(map(str,self.heldDice))

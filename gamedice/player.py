@@ -1,16 +1,18 @@
 ''' 
     dice.player.py
 '''
-from die_utils import split_nums, get_tuple_from_count_dict
+from die_utils import split_nums, get_tuple_from_count_dict, process_single_hold
 from scores import get_score, score_dice
 from choose_dice import get_choice
 from dice import Roll
+from state import State
 
 class Player(object):
     _count = 0
     def __init__(self, name=None):
         Player._count += 1
         self._count = Player._count
+        self.state = State(self)
         if name is None:
             self._name = 'Player#{}'.format(self._count)
             self._isHuman = False
@@ -25,6 +27,12 @@ class Player(object):
 
     def __repr__(self):
         return str(self)
+
+    def get_name(self):
+        return self._name
+
+    def get_score(self):
+        return self._score 
 
     def update_score(self,score):
         if score <= 0:
@@ -43,7 +51,15 @@ class Player(object):
                     choice += str(i) + ' '
                 except:
                     pass
-        return tuple(map(int,choice.split()))
+        return choice
+
+    
+    def change_player(self):
+        self.state.change_state()
+
+    def get_current(self):
+        return State.get_current()
+
 
 HOLD_SCREEN = '''
 Please choose which dice from your roll to hold.

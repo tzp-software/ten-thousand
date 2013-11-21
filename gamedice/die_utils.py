@@ -4,6 +4,7 @@
 '''
 import os
 import sys
+from scores import score_dice, is_strait, is_doubles
 
 def clear():
     #x = os.system('clear')
@@ -43,9 +44,22 @@ def get_tuple_from_count_dict(d):
         rtn.append(tuple(((itm+' ')*int(d[itm])).split()))
     return tuple(rtn)
 
+def process_single_hold(dice):
+    rtn = None
+    if len(dice) == 6:
+        if is_doubles(dice) or is_strait(dice):
+            rtn = (tuple(dice) for dice in [dice])
+    if rtn is None:
+        rtn = (tuple(x) for x in split_nums(dice)[:-1]+get_tuple_from_count_dict(split_nums(dice)[2]) if not len(x) == 0)
+    return rtn
+
 def main():
-    n = [1,5,1,6,6,5,6]
-    print split_nums(n)[:-1] + get_t_from_d(split_nums(n)[2])
+    n = [1,1,5,1,6,6,5,6]
+    print 'Before: {}'.format(n)
+    print 'After:'
+    after = process_single_hold(n)
+    print after
+    print 'Score: {}'.format(score_dice(after))
 
 if __name__ == "__main__":
     main()

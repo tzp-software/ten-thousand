@@ -14,6 +14,12 @@ def get_counts(roll):
         rtn[str(d)] += 1
     return rtn
 
+def is_strait(dice):
+    return get_counts(dice).values().count(1) == 6
+
+def is_doubles(dice):
+    return get_counts(dice).values().count(2) == 3
+ 
 def score_dice(heldRolls):
     total = 0
     subTotal = 0
@@ -28,6 +34,8 @@ def get_score(roll):
         seperated by number ie: (1,1,1) or (5,5) not (1,1,5) 
         thats what die_utils:split_nums(nums) is for
     '''
+    if len(roll) == 0:
+        return 0
     if roll[0] != 1:
         base = 100
     else:
@@ -51,7 +59,10 @@ def get_score(roll):
         try:
             return int(roll[0])*base
         except:
-            return int(roll[0][0])*base
+            try:
+                return int(roll[0][0])*base
+            except:
+                return 0
     else:
         # 1 or 5
         if roll[0] == 1:
@@ -75,5 +86,5 @@ def main():
     print score_dice(held)
     
 if __name__ == "__main__":
-    test()
+    #test()
     main()
