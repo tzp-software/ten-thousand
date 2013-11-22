@@ -1,0 +1,60 @@
+#encoding:UTF-8
+'''
+    screens.py
+'''
+#__all__ = [splash]
+from pyfiglet import Figlet
+import os
+
+
+def get_txt(txt):
+    f = Figlet(font='small')
+    return f.renderText(txt)
+
+def clear():
+    x = os.system('clear')
+
+splash = '''
+ _____       _____ _                              _
+|_   _|__ _ |_   _| |_  ___ _  _ ___ __ _ _ _  __| |
+  | |/ -_) ' \| | | ' \/ _ \ || (_-</ _` | ' \/ _` |
+  |_|\___|_||  _| |_||_\___/\_,_/__/\__,_|_||_\__,_|
+           _  __   __   __   __
+          / |/  \ /  \ /  \ /  \    ⚃     ⚂     ⚀
+          | | () | () | () | () |      ⚄     ⚁    ⚅
+          |_|\__( )__/ \__/ \__/
+                |/
+
+            Press enter to start...
+
+by: Kyle Roux
+'''
+
+
+menu = '''
+
+{0}. \bStart Game
+
+{1}. \bRead Rules
+
+{2}. \bQuit
+
+'''.format(m1,m2,m3)
+
+
+SCREENS = {
+    '1' : splash,
+    '2' : menu,
+
+}
+
+
+def main():
+    clear()
+    print splash
+    raw_input()
+    print menu
+    raw_input()
+
+if __name__ == "__main__":
+    main()
