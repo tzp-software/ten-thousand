@@ -12,6 +12,8 @@ config = {
     'description': 'a dice game',
     'long_description': open('README','r').read(),
     'url': 'git://github.com/tzp-software/ten-thousand.git',
+    'install_requires': ['pyfiglet'],
+    'tests_require' : ['nose'],
         }
 setup(**config)
 

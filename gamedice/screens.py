@@ -12,6 +12,7 @@ from scores import score_dice
 import os
 
 
+HELD = []
 def get_txt(txt):
     f = Figlet(font='small')
     return f.renderText(txt)
@@ -61,7 +62,14 @@ rolled = '''
 \_/_     |_) _ || _  _|o 
  |(_)|_| | \(_)||(/_(_|o 
 
-{}
+{}\n{}\n{}
+|_|o.__|_ o 
+| ||| ||_ o {}    
+\    /_ .__|_|_  o 
+ \/\/(_)|  |_| | o {}
+    press enter to keep the hint
+    or type num enter to keep the 
+    dice under num
 '''
 
 D1 = '''
@@ -110,14 +118,27 @@ D6 = '''#######
  ##   ## 
  ####### 
 '''
-
+def is_held(die):
+    global HELD
+    if len(HELD) > 0:
+        for itm in HELD:
+            if not itm.id == die.id:
+                HELD.append(die)
+                return False
+    return True
 
 def print_rolled(dice):
+    holds = [' {} ']*len(dice)
+    for d in range(len(dice)):
+        if is_held(dice[d]):
+            holds[d] = holds[d].format('held')
     f = Figlet(font='future_8')
     dies = f.renderText(' '.join(map(str,dice)))
-    # dies = [None,D1,D2,D3,D4,D5,D6]
+    labels = ('  ({})  ' + '   ')*len(dice)
+    hint = get_choice(dice)
+    score = score_dice(hint)
     clear()
-    print rolled.format(dies)
+    print rolled.format(labels.format(*range(1,len(dice)+1)),dies,holds,hint,score)
 
 SCREENS = {
     '1' : splash,
@@ -130,23 +151,25 @@ def main():
     clear()
     print splash
     raw_input()
+    clear()
     print menu
     raw_input()
+    clear()
     roll_dice()
     r = Roll()
     d = r.get_new_roll()
     c = get_choice(d)
-    print 'Rolled: {}'.format(' '.join(map(str,d)))
-    print 'Holding: {}'.format(c)
+    print_rolled(d)
+    #print 'Holding: {}'.format(c)
     #p = process_single_hold(c)
     #print list(p)
     #p = process_single_hold(c)
-    print 'worth: {}'.format(score_dice(c))
+    #print 'worth: {}'.format(score_dice(c))
 
 if __name__ == "__main__":
-    #main()
-    from dice import Roll
-    print_rolled(Roll().get_new_roll())
+    main()
+    #from dice import Roll
+    #print_rolled(Roll().get_new_roll())
 '''print 
 _   ___   ____
 / | |_  ) |__ /
@@ -259,5 +282,15 @@ _   ___   ____
  # ##### 
  ##   ## 
  ####### 
-         
+        
+
+            
+|_|o.__|_ o 
+| ||| ||_ o 
+            
+
+                   
+\    /_ .__|_|_  o 
+ \/\/(_)|  |_| | o 
+                   
 '''

@@ -13,3 +13,16 @@ also you cant stop till you reach 1000 points
 once a player reaches 10000 other players have a chance to 
 come back with one final roll
 
+# ps. Its still not working, trust me, youll be the first 
+      to know when it is.
+
+but when it is
+
+to install simply:
+python setup.py --user=~/local install
+
+to run tests:
+python setup.py nosetests
+
+or just:
+./tests.py
